@@ -1,0 +1,29 @@
+The Advantages of SS
+====================
+
+* Functions let, var, const, immutable can all be created as syntactic sugar.
+  In fact, almost any keyword can be worked in.
+
+* UTF-8 is the default, built-in string type.
+* Reflection is very much a part of the language.
+* Easy to read, I hope, especially with highlighting from an editor.
+  No excess of parentheses everywhere, nor colons or other clutter.
+  There may be an annoying amount of whitespace...
+* Imperative, declarative, and functional language.
+* With linters and code analysis as a part of the ecosystem, you can write
+  better code.
+* The language is typed and is strictly enforced.
+* No ===, except where a user may define such an infix function.
+* Language libraries and primitives help enforce writing good code.
+* Clear delineation between pointed to items and primitive types.
+* Any symbols can turn into functions.
+* Easy templating, generics, and macros.
+* Well designed FFI.
+* Destructuring is supported by bind.
+* All operators can be overloaded.
+* Don't need .NET framework.
+* Syntax checked while interpreting code.
+* Variables are shadowed.
+* Designed to be secure and sandboxing is natural and built-in.
+* Correctness over speed is emphasized. Optimizations welcome though.
+
