@@ -24,96 +24,97 @@
  * @author Craig Jacobson
  * @brief SymbolScript interpreter.
  */
-#include "sym.h"
-
 #include <errno.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
+#include "symcore.h"
+#include "symio.h"
+
 #include "liner.h"
+#include "tokenizer.h"
 
 
-static int
-read_lines(void)
+/**
+ * @brief Chop the line up into tokens.
+ */
+static error_t
+tokenize_line(tokenizer_t *tokenizer, line_t line)
 {
-    int err = 0;
-    char *line = NULL;
-    size_t linelen = 0;
+    printf("here\n");
 
-    for (;;)
+
+
+    token_t token;
+    tokenizer_set_line(tokenizer, line.len, line.s);
+    while (tokenize(tokenizer, &token))
     {
-        if (!flushing)
+        printf("Token: type:%s, c:%lu, l:%lu, value:\"%.*s\"\n",
+               toktype_name(token.type), token.col, token.line,
+               (int)token.toklen, (const char *)token.tok);
+    }
+    return 0;
+}
+
+/**
+ * @brief Reads lines from the liner and feeds them into the tokenizer.
+ */
+static error_t
+read_lines(tokenizer_t *tokenizer, liner_t liner, void *lexer, void *context)
+{
+    error_t err = liner.open(liner.src);
+    if (err)
+    {
+        return err;
+    }
+
+    bool done = false;
+    while (!done)
+    {
+        line_io_t either_line = liner.get_line(liner.src, context);
+
+        switch (either_line.type)
         {
-            err = fputs(">>> ", stdout);
-            if (EOF == err)
-            {
-                printf("here %d\n", err);
+            case LINER_LINE:
+                {
+                    line_t line = either_line.u.line;
+                    printf("Line: %.*s\n", (int)line.len, (char *)line.s);
+                    err = tokenize_line(tokenizer, line);
+                    if (err)
+                    {
+                        done = true;
+                    }
+                    liner.free_line(liner.src, line);
+                }
                 break;
-            }
-            else
-            {
-                err = 0;
-            }
-        }
-
-        line = fgets(linebuf, linebuflen, stdin);
-
-        if (!line)
-        {
-            // Ignoring err output because we already encountered an error
-            if (errno)
-            {
-                fputs("\nAn error occurred on stdin, exiting...\n", stderr);
-                err = errno;
-            }
-            else
-            {
-                fputs("\nExiting\n", stdout);
-                err = 0;
-            }
-            break;
-        }
-
-        char *nl = memchr(line, '\n', linebuflen);
-
-        // Remove newline, or skip when flushing
-        if (nl)
-        {
-            *nl = '\0';
-            flushing = false;
-        }
-        else
-        {
-            if (!flushing)
-            {
-                err = fputs("Line was too long and was ignored\n"
-                            "Try breaking the line up\n",
-                            stderr);
+            case LINER_ERROR:
+                err = either_line.u.error;
                 if (EOF == err)
                 {
-                    break;
-                }
-                else
-                {
+                    done = true;
                     err = 0;
                 }
-                flushing = true;
-            }
-        }
-
-        if (!flushing)
-        {
-            // do something with line
+                else if (err)
+                {
+                    done = true;
+                }
+                break;
+            default:
+                {
+                    fputs("Fatal error: unknown type in either_line\n", stderr);
+                    err = EIO;
+                }
+                break;
         }
     }
 
-    free(linebuf);
+    error_t err2 = liner.close(liner.src);
+    if (!err)
+    {
+        err = err2;
+    }
 
     return err;
 }
-
 
 int
 main(int argc, char *argv[])
@@ -125,6 +126,7 @@ main(int argc, char *argv[])
     }
 
     liner_t liner;
+    tokenizer_t tokenizer;
 
     if (argc < 2)
     {
@@ -139,6 +141,12 @@ main(int argc, char *argv[])
         liner = mk_liner_from_file(argv[1]);
     }
 
-    return read_lines();
+    tokenizer_init(&tokenizer);
+
+    error_t err = read_lines(&tokenizer, liner, NULL, NULL);
+
+    tokenizer_destroy(&tokenizer);
+
+    return err;
 }
 

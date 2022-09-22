@@ -1,22 +1,8 @@
 
 #include <stdlib.h>
 
+#include "debug.h"
 #include "tokenizer.h"
-
-
-//#define DEBUG
-
-#if defined DEBUG && !DPRINTF
-#include <stdio.h>
-#define DPRINTF(...) printf(__VA_ARGS__);
-#else
-#define DPRINTF(...)
-#endif
-
-
-#ifdef DEBUG
-#include <stdio.h>
-#endif
 
 
 #ifndef memzero
@@ -43,6 +29,7 @@ FOR_TOKEN_TYPES( EXPORT_TOKEN_TYPE_NAME )
     return t < (sizeof(names)/sizeof(*names)) ? names[(int)t] : "INVALID";
 }
 
+#ifdef DEBUG
 static const char *
 _tokstate_name(enum tokstate s)
 {
@@ -55,12 +42,13 @@ _tokstate_name(enum tokstate s)
     };
     return names[(int)s];
 }
+#endif
 
 void
 tokenizer_init(tokenizer_t *t)
 {
     t->state = TOKSTATE_END;
-    t->line = _EMPTY;
+    t->line = (const uint8_t *)_EMPTY;
     t->linelen = 0;
     t->linenum = 0;
     t->colindex = 0;
@@ -87,7 +75,7 @@ tokenizer_print(tokenizer_t *t)
  * @brief Set the current segment we're tokenizing.
  */
 void
-tokenizer_set_line(tokenizer_t *t, const uint8_t *line, size_t linelen)
+tokenizer_set_line(tokenizer_t *t, size_t linelen, const uint8_t *line)
 {
     if (t->state == TOKSTATE_END)
     {

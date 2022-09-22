@@ -30,6 +30,7 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "symio.h"
@@ -43,13 +44,13 @@ enum liner_either
 
 typedef struct
 {
-    char *s;
+    uint8_t *s;
     size_t len;
 } line_t;
 
 typedef struct
 {
-    enum liner_either;
+    enum liner_either type;
     union
     {
         line_t line;
@@ -58,16 +59,16 @@ typedef struct
 } line_io_t;
 
 typedef error_t (*liner_open_t)(void *src);
-typedef line_io_t (*liner_get_line_t)(void *src);
+typedef line_io_t (*liner_get_line_t)(void *src, void *context);
+typedef void (*liner_free_line_t)(void *src, line_t line);
 typedef error_t (*liner_close_t)(void *src);
 
 typedef struct
 {
     void *src;
-    size_t buflen;
-    char *buf;
     liner_open_t open;
     liner_get_line_t get_line;
+    liner_free_line_t free_line;
     liner_close_t close;
 } liner_t;
 

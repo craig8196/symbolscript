@@ -2,5 +2,6 @@
 project('symbol-script', 'c')
 
 incdir = include_directories('include')
-executable('sym', 'src/sym.c', include_directories: incdir)
+subdir('src')
+executable('sym', sym_sources, include_directories: incdir)
 

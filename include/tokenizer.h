@@ -32,6 +32,7 @@ extern "C" {
 
 
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 
 
@@ -93,7 +94,7 @@ enum tokstate
  * tokenizer_init(t);
  * while (line = get_line())
  * {
- *   tokenizer_set_line(t, line, linelen);
+ *   tokenizer_set_line(t, linelen, line);
  *   while (tokenize(t, &tok)) { // stuff; }
  * }
  * tokenizer_destroy(t);
@@ -114,7 +115,7 @@ tokenizer_init(tokenizer_t *t);
 void
 tokenizer_destroy(tokenizer_t *t);
 void
-tokenizer_set_line(tokenizer_t *t, const uint8_t *line, size_t linelen);
+tokenizer_set_line(tokenizer_t *t, size_t linelen, const uint8_t *line);
 bool
 tokenize(tokenizer_t *t, token_t *tok);
 

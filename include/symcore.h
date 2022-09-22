@@ -20,20 +20,24 @@
  * SOFTWARE.
  ******************************************************************************/
 /**
- * @file sym.h
+ * @file symio.h
  * @author Craig Jacobson
- * @brief SymbolScript interpreter header.
+ * @brief Basic types and tools used basically everywhere.
  */
-#ifndef SYMBOLSCRIPT_INTERPRETER_H_
-#define SYMBOLSCRIPT_INTERPRETER_H_
+#ifndef SYMBOLSCRIPT_SYMCORE_H_
+#define SYMBOLSCRIPT_SYMCORE_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* SYMBOLSCRIPT_INTERPRETER_H_ */
+#endif /* SYMBOLSCRIPT_SYMCORE_H_ */
 

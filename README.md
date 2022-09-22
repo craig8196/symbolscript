@@ -60,6 +60,33 @@ Non-Goals:
 
 Every language has rules.
 
+First, this language is line-token-symbol-function oriented.
+So each line of text is chopped into tokens.
+Each token is resolved and the highest precedented function is executed first.
+TODO lookup precedent resolving algorithms in the context of types.
+
+Second, that's all.
+
+Third, to build functions there are the following types of fixity:
+leftfix, infix, rightfix, chainfix.
+
+Fourth, each function can be overloaded (fixity included) and resolution order
+can be declared to prefer certain types given ambiguity.
+
+Fourth, functions can declare an Argument, Token, Symbol, Line, Block, RawBlock, FunctionBlock.
+Argument: has a type and is an argument to the function.
+Token: Parsed tokens.
+Symbol: Static symbol.
+Line: All tokens until the end-of-line.
+Block: Block of code that is parsed and shares context with surrounding code according to indentation.
+RawBlock: Block of tokens determined by indentation.
+FunctionBlock: Block of code that does NOT share context.
+
+
+
+
+OLD CONTENT
+
 The first feature of the language is apply.
 Apply calls and executes the first function it comes across, with the highest precedent.
 
@@ -266,6 +293,15 @@ a = int
 # Also, named arguments just make a mess of things, create a map/struct
 func a ( b c d e f g h i errorHere) -> void
   "This will not return" # and this shows that the string is ignored as the return value b/c it's not 'void'
+
+# I still haven't figured out if statements though
+if true
+   then
+     pass
+   else
+     pass
+# Of as infix
+x if true else y
 ```
 
 

@@ -20,32 +20,35 @@
  * SOFTWARE.
  ******************************************************************************/
 /**
- * @file symmem.h
+ * @file debug.h
  * @author Craig Jacobson
- * @brief Binary ops and memory allocation functions.
+ * @brief Debug header and macros.
  */
-#ifndef SYMBOLSCRIPT_SYMMEM_H_
-#define SYMBOLSCRIPT_SYMMEM_H_
+#ifndef SYMBOLSCRIPT_DEBUG_H_
+#define SYMBOLSCRIPT_DEBUG_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdlib.h>
-#include <string.h>
+
+//#define DEBUG
+
+#if defined DEBUG && !DPRINTF
+#include <stdio.h>
+#define DPRINTF(...) printf(__VA_ARGS__);
+#else
+#define DPRINTF(...)
+#endif
 
 
-void *
-memget(size_t);
-void *
-memreget(void *, size_t);
-void
-memput(void *);
-size_t
-meminc(size_t);
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* SYMBOLSCRIPT_SYMMEM_H_ */
+#endif /* SYMBOLSCRIPT_DEBUG_H_ */
+
 
